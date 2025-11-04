@@ -1,0 +1,88 @@
+[
+  {
+    "Name": "Jägerbomb",
+    "Ingredients": [
+      { "Name": "Jägermeister", "Ratio": "30" },
+      { "Name": "Energy drink", "Ratio": "70" }
+    ],
+    "Alchohol": true
+  },
+  {
+    "Name": "Cuba Libre",
+    "Ingredients": [
+      { "Name": "Rum", "Ratio": "40" },
+      { "Name": "Cola", "Ratio": "55" },
+      { "Name": "Lime juice", "Ratio": "5" }
+    ],
+    "Alchohol": true
+  },
+  {
+    "Name": "Screwdriver",
+    "Ingredients": [
+      { "Name": "Vodka", "Ratio": "50" },
+      { "Name": "Orange juice", "Ratio": "50" }
+    ],
+    "Alchohol": true
+  },
+  {
+    "Name": "Mojito",
+    "Ingredients": [
+      { "Name": "Rum", "Ratio": "40" },
+      { "Name": "Soda water", "Ratio": "40" },
+      { "Name": "Lime juice", "Ratio": "15" },
+      { "Name": "Sugar syrup", "Ratio": "5" }
+    ],
+    "Alchohol": true
+  },
+  {
+    "Name": "Virgin Mojito",
+    "Ingredients": [
+      { "Name": "Soda water", "Ratio": "50" },
+      { "Name": "Lime juice", "Ratio": "40" },
+      { "Name": "Sugar syrup", "Ratio": "10" }
+    ],
+    "Alchohol": false
+  },
+  {
+    "Name": "Whiskey Cola",
+    "Ingredients": [
+      { "Name": "Whiskey", "Ratio": "40" },
+      { "Name": "Cola", "Ratio": "60" }
+    ],
+    "Alchohol": true
+  },
+  {
+    "Name": "Tequila Sunrise",
+    "Ingredients": [
+      { "Name": "Tequila", "Ratio": "35" },
+      { "Name": "Orange juice", "Ratio": "60" },
+      { "Name": "Grenadine syrup", "Ratio": "5" }
+    ],
+    "Alchohol": true
+  },
+  {
+    "Name": "Gin Tonic",
+    "Ingredients": [
+      { "Name": "Gin", "Ratio": "40" },
+      { "Name": "Tonic water", "Ratio": "60" }
+    ],
+    "Alchohol": true
+  },
+  {
+    "Name": "Lemonade",
+    "Ingredients": [
+      { "Name": "Lemon juice", "Ratio": "25" },
+      { "Name": "Sugar syrup", "Ratio": "10" },
+      { "Name": "Water", "Ratio": "65" }
+    ],
+    "Alchohol": false
+  },
+  {
+    "Name": "Rum Cola",
+    "Ingredients": [
+      { "Name": "Rum", "Ratio": "40" },
+      { "Name": "Cola", "Ratio": "60" }
+    ],
+    "Alchohol": true
+  }
+]
