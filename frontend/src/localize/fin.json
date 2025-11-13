@@ -1,0 +1,11 @@
+{
+  "placeHolder": {
+    "notYetImplemented": "Ei vielä toteutettu",
+    "pleaseWait": "Odota, tässä voi mennä hetki..."
+  },
+  "label": {
+    "cancel": "Peruuta",
+    "save": "Tallenna",
+    "back": "Takaisin"
+  }
+}

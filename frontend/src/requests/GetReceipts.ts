@@ -1,7 +1,7 @@
 import { Receipt, Ingredient } from '../types/Receipt';
+import { API_URL } from '../config';
 
 export async function fetchReceipts(): Promise<Receipt[]> {
-    const API_URL = process.env.API_URL || 'http://localhost:3000/api';
     const res = await fetch(`${API_URL}/cocktails`);
     if (!res.ok) throw new Error('Failed to fetch receipts');
     const data = await res.json();

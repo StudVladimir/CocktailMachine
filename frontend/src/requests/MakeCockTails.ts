@@ -1,4 +1,6 @@
 import { PumpInstruction } from "../types/PumpInstruction";
+import { API_URL } from '../config';
+
 export default function MakeCocktail(body: PumpInstruction[]) {
   /*const body: PumpInstruction[] = [
     { pump: 1, seconds: 5 },
@@ -7,7 +9,6 @@ export default function MakeCocktail(body: PumpInstruction[]) {
 
   console.log('Sending request to backend...');
   console.log('Request body:', body);
-  const API_URL = process.env.API_URL || 'http://172.20.71.229:3000/api';
   fetch(`${API_URL}/makecocktail`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

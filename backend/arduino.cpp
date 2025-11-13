@@ -1,5 +1,6 @@
 #include <WiFiNINA.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 
 // WiFi credentials
 const char* ssid = "Xamklab";
@@ -11,13 +12,156 @@ const int mqtt_port = 1883;
 const char* mqtt_user = "student";
 const char* mqtt_pass = "student";
 
+// Relay pins for pumps (pump 1-4 connected to pins 3-6)
+const int PUMP_PINS[4] = {3, 4, 5, 6};
+const int NUM_PUMPS = 4;
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 String deviceId = "CockTailArduino";
+String cocktailTopic = "Group5/ReactNative/MakeCocktail";
+
+// Structure to track pump state
+struct PumpState {
+    bool active;
+    unsigned long startTime;
+    unsigned long duration;
+};
+
+PumpState pumpStates[4] = {{false, 0, 0}, {false, 0, 0}, {false, 0, 0}, {false, 0, 0}};
+
+// Function to start a pump (non-blocking)
+void startPump(int pumpNumber, float seconds) {
+    if (pumpNumber < 1 || pumpNumber > NUM_PUMPS) {
+        Serial.print("Invalid pump number: ");
+        Serial.println(pumpNumber);
+        return;
+    }
+
+    int pinIndex = pumpNumber - 1;
+    int pin = PUMP_PINS[pinIndex];
+    unsigned long duration = (unsigned long)(seconds * 1000);
+
+    Serial.print("Starting pump ");
+    Serial.print(pumpNumber);
+    Serial.print(" (pin ");
+    Serial.print(pin);
+    Serial.print(") for ");
+    Serial.print(seconds);
+    Serial.println(" seconds");
+
+    // Turn on the pump
+    digitalWrite(pin, LOW);
+    
+    // Record state
+    pumpStates[pinIndex].active = true;
+    pumpStates[pinIndex].startTime = millis();
+    pumpStates[pinIndex].duration = duration;
+}
+
+// Function to update all pumps (check if they should be stopped)
+void updatePumps() {
+    for (int i = 0; i < NUM_PUMPS; i++) {
+        if (pumpStates[i].active) {
+            unsigned long elapsed = millis() - pumpStates[i].startTime;
+            
+            if (elapsed >= pumpStates[i].duration) {
+                // Time is up, turn off pump
+                digitalWrite(PUMP_PINS[i], HIGH);
+                pumpStates[i].active = false;
+                
+                Serial.print("Pump ");
+                Serial.print(i + 1);
+                Serial.println(" finished");
+            }
+        }
+    }
+}
+
+// Check if any pump is still running
+bool anyPumpActive() {
+    for (int i = 0; i < NUM_PUMPS; i++) {
+        if (pumpStates[i].active) {
+            return true;
+        }
+    }
+    return false;
+}
+
+// Function to process cocktail instructions
+void processCocktailInstructions(const char* jsonMessage) {
+    Serial.println("Processing cocktail instructions...");
+    Serial.print("Received JSON: ");
+    Serial.println(jsonMessage);
+
+    // Parse JSON array directly
+    StaticJsonDocument<512> doc;
+    DeserializationError error = deserializeJson(doc, jsonMessage);
+
+    if (error) {
+        Serial.print("JSON parsing failed: ");
+        Serial.println(error.c_str());
+        return;
+    }
+
+    // Check if it's an array
+    if (!doc.is<JsonArray>()) {
+        Serial.println("JSON is not an array");
+        return;
+    }
+
+    // Process each pump instruction
+    JsonArray instructions = doc.as<JsonArray>();
+    Serial.print("Number of instructions: ");
+    Serial.println(instructions.size());
+
+    // Start all pumps simultaneously
+    for (JsonObject instruction : instructions) {
+        int pump = instruction["pump"];
+        float seconds = instruction["seconds"];
+
+        Serial.print("Instruction - Pump: ");
+        Serial.print(pump);
+        Serial.print(", Seconds: ");
+        Serial.println(seconds);
+
+        startPump(pump, seconds);
+    }
+
+    Serial.println("All pumps started! Waiting for completion...");
+
+    // Wait for all pumps to finish
+    while (anyPumpActive()) {
+        updatePumps();
+        delay(10); // Small delay to prevent excessive CPU usage
+    }
+
+    Serial.println("All pumps finished!");
+    
+    // Send completion message back to MQTT
+    String statusTopic = String("Group5/") + deviceId + "/status";
+    client.publish(statusTopic.c_str(), "cocktail_completed", false);
+}
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
-    // no logic needed for now
+    Serial.print("Message arrived [");
+    Serial.print(topic);
+    Serial.print("] ");
+
+    // Convert payload to string
+    char message[length + 1];
+    for (unsigned int i = 0; i < length; i++) {
+        message[i] = (char)payload[i];
+    }
+    message[length] = '\0';
+
+    Serial.println(message);
+
+    // Check if this is a cocktail making request
+    if (String(topic) == cocktailTopic) {
+        processCocktailInstructions(message);
+    }
 }
 
 bool mqttConnect() {
@@ -35,6 +179,11 @@ bool mqttConnect() {
         // Publish retained 'online' so HA knows we're online
         client.publish(availTopic.c_str(), "online", true);
 
+        // Subscribe to cocktail making topic
+        client.subscribe(cocktailTopic.c_str());
+        Serial.print("Subscribed to topic: ");
+        Serial.println(cocktailTopic);
+
         // Publish a simple non-retained message to indicate device connected
         String msgTopic = String("Group5/") + deviceId + "/message";
         client.publish(msgTopic.c_str(), "hello from device", false);
@@ -51,6 +200,21 @@ void setup() {
     Serial.begin(115200);
     delay(100);
 
+    // Initialize pump relay pins as outputs
+    for (int i = 0; i < NUM_PUMPS; i++) {
+        pinMode(PUMP_PINS[i], OUTPUT);
+        digitalWrite(PUMP_PINS[i], HIGH); // Make sure all pumps are off initially
+    }
+    Serial.println("Pump pins initialized (pins 3-6)");
+
+    // create a deviceId from MAC suffix (before WiFi connection)
+    uint8_t mac[6];
+    WiFi.macAddress(mac);
+    char idbuf[32];
+    snprintf(idbuf, sizeof(idbuf), "bar_%02X%02X%02X", mac[3], mac[4], mac[5]);
+    deviceId = String(idbuf);
+    Serial.print("DeviceId: "); Serial.println(deviceId);
+
     Serial.print("Connecting to Wi-Fi: ");
     Serial.println(ssid);
     WiFi.begin(ssid, password);
@@ -66,15 +230,8 @@ void setup() {
         Serial.println(WiFi.localIP());
     } else {
         Serial.println("\nWi-Fi connection failed");
+        return; // Exit setup if WiFi failed
     }
-
-    // create a deviceId from MAC suffix
-    uint8_t mac[6];
-    WiFi.macAddress(mac);
-    char idbuf[32];
-    snprintf(idbuf, sizeof(idbuf), "bar_%02X%02X%02X", mac[3], mac[4], mac[5]);
-    deviceId = String(idbuf);
-    Serial.print("DeviceId: "); Serial.println(deviceId);
 
     client.setServer(mqtt_server, mqtt_port);
     client.setCallback(mqttCallback);
@@ -87,6 +244,9 @@ void loop() {
         mqttConnect();
     }
     client.loop();
+
+    // Update pump states (turn off pumps when their time is up)
+    updatePumps();
 
     // periodic heartbeat (re-publish retained online so HA keeps seeing the device)
     if (millis() - lastHeartbeat > 30000) {
