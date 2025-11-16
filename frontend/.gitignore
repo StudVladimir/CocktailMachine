@@ -43,3 +43,4 @@ yarn-error.*
 
 .DS_Store
 package-lock.json
+./src/config.ts
