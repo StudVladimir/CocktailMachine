@@ -5,6 +5,7 @@ import { fetchReceipts } from '../requests/GetReceipts';
 import { getAvailableCocktails } from '../services/availableDrinks';
 import { calculatePumpInstructions } from '../services/calculatePumpInstructions';
 import MakeCocktail from '../requests/MakeCockTails';
+import StopCocktail from '../requests/StopCockTails';
 import { Receipt } from '../types/Receipt';
 import Card from './Card';
 import { setDrinkImg } from '../services/setDrinkImg';
@@ -16,6 +17,7 @@ export default function Main({ navigation }: any) {
 	const [error, setError] = useState<string | null>(null);
 	const [selectedVolume, setSelectedVolume] = useState<number>(200); // По умолчанию 200ml
 	const [selectedCocktail, setSelectedCocktail] = useState<Receipt | null>(null);
+	const [isMakingCocktail, setIsMakingCocktail] = useState(false);
 
 	console.log('Main экран загружен, прямой доступ к насосам:', {
 		pump1: pump1?.name,
@@ -93,7 +95,20 @@ export default function Main({ navigation }: any) {
 
 		// Отправляем инструкции на бэкенд
 		console.log('Отправка инструкций на бэкенд:', instructions);
+		setIsMakingCocktail(true);
 		MakeCocktail(instructions);
+		
+		// Автоматически деактивируем кнопку СТОП через максимальное время приготовления
+		const maxTime = Math.max(...instructions.map(i => i.seconds));
+		setTimeout(() => {
+			setIsMakingCocktail(false);
+		}, maxTime * 1000 + 1000); // +1 секунда запас
+	};
+
+	const handleStopCocktail = () => {
+		console.log('🛑 ЭКСТРЕННАЯ ОСТАНОВКА!');
+		StopCocktail();
+		setIsMakingCocktail(false);
 	};
 
 	const handleSelectCocktail = (cocktail: Receipt) => {
@@ -220,6 +235,23 @@ export default function Main({ navigation }: any) {
 						{selectedCocktail 
 							? `Сделать\n${selectedCocktail.name || selectedCocktail.Name}` 
 							: 'Выберите коктейль'}
+					</Text>
+				</TouchableOpacity>
+
+				{/* Кнопка экстренной остановки */}
+				<TouchableOpacity
+					style={[
+						styles.stopButton,
+						!isMakingCocktail && styles.stopButtonDisabled,
+					]}
+					onPress={handleStopCocktail}
+					disabled={!isMakingCocktail}
+				>
+					<Text style={[
+						styles.stopButtonText,
+						!isMakingCocktail && styles.stopButtonTextDisabled,
+					]}>
+						🛑 СТОП
 					</Text>
 				</TouchableOpacity>
 			</View>
@@ -412,5 +444,33 @@ const styles = StyleSheet.create({
 	},
 	makeCocktailTextDisabled: {
 		color: '#999',
+	},
+	stopButton: {
+		flex: 1,
+		backgroundColor: '#d32f2f',
+		paddingVertical: 20,
+		paddingHorizontal: 20,
+		borderRadius: 12,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginTop: 10,
+		elevation: 3,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.25,
+		shadowRadius: 3.84,
+	},
+	stopButtonDisabled: {
+		backgroundColor: '#e0e0e0',
+		elevation: 0,
+	},
+	stopButtonText: {
+		fontSize: 20,
+		fontWeight: 'bold',
+		color: '#fff',
+		textAlign: 'center',
+	},
+	stopButtonTextDisabled: {
+		color: '#bbb',
 	},
 });

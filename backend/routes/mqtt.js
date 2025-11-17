@@ -78,4 +78,22 @@ module.exports = function registerMqttRoutes(app) {
       res.json({ ok: true, topic, message });
     });
   });
+
+  // POST /api/makecocktail/stop
+  // Emergency stop - stops all pumps immediately
+  app.post('/api/makecocktail/stop', (req, res) => {
+    const c = ensureClient();
+    const topic = `${BASE_TOPIC}/EmergencyStop`;
+    const message = 'emergency stop';
+
+    // publish with qos 1 for reliability
+    c.publish(topic, message, { qos: 1 }, (err) => {
+      if (err) {
+        console.error('Failed to publish EmergencyStop', err);
+        return res.status(500).json({ error: 'Emergency stop publish failed' });
+      }
+      console.log('Emergency stop signal sent');
+      res.json({ ok: true, topic, message });
+    });
+  });
 };

@@ -21,6 +21,7 @@ PubSubClient client(espClient);
 
 String deviceId = "CockTailArduino";
 String cocktailTopic = "Group5/ReactNative/MakeCocktail";
+String emergencyStopTopic = "Group5/ReactNative/EmergencyStop";
 
 // Structure to track pump state
 struct PumpState {
@@ -87,6 +88,26 @@ bool anyPumpActive() {
         }
     }
     return false;
+}
+
+// Emergency stop - immediately turn off all pumps
+void emergencyStop() {
+    Serial.println("🛑 EMERGENCY STOP ACTIVATED!");
+    
+    // Turn off all pumps immediately
+    for (int i = 0; i < NUM_PUMPS; i++) {
+        digitalWrite(PUMP_PINS[i], HIGH);
+        pumpStates[i].active = false;
+        Serial.print("Pump ");
+        Serial.print(i + 1);
+        Serial.println(" stopped");
+    }
+    
+    Serial.println("All pumps stopped!");
+    
+    // Send status back to MQTT
+    String statusTopic = String("Group5/") + deviceId + "/status";
+    client.publish(statusTopic.c_str(), "emergency_stop_executed", false);
 }
 
 // Function to process cocktail instructions
@@ -162,6 +183,10 @@ void mqttCallback(char* topic, byte* payload, unsigned int length) {
     if (String(topic) == cocktailTopic) {
         processCocktailInstructions(message);
     }
+    // Check if this is an emergency stop request
+    else if (String(topic) == emergencyStopTopic) {
+        emergencyStop();
+    }
 }
 
 bool mqttConnect() {
@@ -183,6 +208,11 @@ bool mqttConnect() {
         client.subscribe(cocktailTopic.c_str());
         Serial.print("Subscribed to topic: ");
         Serial.println(cocktailTopic);
+        
+        // Subscribe to emergency stop topic
+        client.subscribe(emergencyStopTopic.c_str());
+        Serial.print("Subscribed to emergency stop topic: ");
+        Serial.println(emergencyStopTopic);
 
         // Publish a simple non-retained message to indicate device connected
         String msgTopic = String("Group5/") + deviceId + "/message";
