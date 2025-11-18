@@ -1,0 +1,51 @@
+{
+  "placeHolder": {
+    "notYetImplemented": "Noch nicht implementiert",
+    "pleaseWait": "Bitte warten, das kann einen Moment dauern..."
+  },
+  "label": {
+    "currentLocaleLabel": "Deutsch",
+    "flag": "🇩🇪",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "back": "Zurück"
+  },
+  "languagePicker": {
+    "selectLanguage": "Sprache wählen"
+  },
+  "main": {
+    "pump": "Pumpe",
+    "notAssigned": "Nicht zugewiesen",
+    "setupDrinks": "Getränke einrichten",
+    "loadingCocktails": "Cocktails laden...",
+    "tryAgain": "Erneut versuchen",
+    "availableCocktails": "Verfügbare Cocktails",
+    "noCocktailsTitle": "😔 Keine verfügbaren Cocktails",
+    "noCocktailsText": "Richten Sie Pumpen mit Zutaten ein, um verfügbare Cocktails zu sehen",
+    "volume": "Volumen:",
+    "make": "Zubereiten",
+    "selectCocktail": "Cocktail auswählen",
+    "stop": "STOPP",
+    "preparingCocktail": "Cocktail wird zubereitet",
+    "sec": "Sek"
+  },
+  "pumpDialog": {
+    "title": "Pumpen-Einrichtung",
+    "selected": "Ausgewählt:",
+    "loadingComponents": "Komponenten laden...",
+    "error": "❌ Fehler ❌",
+    "back": "Zurück",
+    "noComponents": "Keine Komponenten verfügbar",
+    "assignDrinks": "Getränke zuweisen",
+    "cancel": "Abbrechen"
+  },
+  "pumpSetup": {
+    "title": "Pumpen-Einrichtung",
+    "subtitle": "Ziehen Sie Getränke in die Pumpenplätze",
+    "pump": "Pumpe",
+    "dragHere": "Hier ablegen",
+    "availableDrinks": "Verfügbare Getränke:",
+    "allAssigned": "Alle Getränke zugewiesen! ✓",
+    "done": "Fertig"
+  }
+}

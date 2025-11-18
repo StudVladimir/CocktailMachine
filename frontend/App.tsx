@@ -19,6 +19,7 @@ export default function App() {
     { code: 'ru', flag: '🇷🇺', name: 'Русский' },
     { code: 'fi', flag: '🇫🇮', name: 'Suomi' },
     { code: 'vie', flag: '🇻🇳', name: 'Tiếng Việt' },
+    { code: 'de', flag: '🇩🇪', name: 'Deutsch' },
   ];
 
   const selectLanguage = (languageCode: string) => {
