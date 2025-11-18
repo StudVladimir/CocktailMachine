@@ -81,46 +81,120 @@ export default function PumpSetup({ route, navigation }: any) {
 	const allAssigned = getAvailableComponents().length === 0 && selectedComponents.length > 0;
 
 	const handleDrop = (component: Component, x: number, y: number) => {
-		let assigned = false;
+		console.log('Drop coordinates:', { x, y });
+		console.log('Drop zones:', dropZones);
 		
-		// Проверяем, в какую зону попала карточка
+		let closestPump = '';
+		let minDistance = Infinity;
+		let foundTopRow = false;
+		
+		// Сначала проверяем, попадает ли точка внутрь какой-либо зоны
+		let foundDirectHit = false;
+		
 		Object.keys(dropZones).forEach((key) => {
 			const zone = dropZones[key];
-			// Увеличиваем зону захвата и проверяем центр карточки
-			const expandedZone = {
-				x: zone.x - 20,
-				y: zone.y - 50, // Увеличиваем зону вверх
-				width: zone.width + 40,
-				height: zone.height + 70,
-			};
 			
-			if (
-				x >= expandedZone.x &&
-				x <= expandedZone.x + expandedZone.width &&
-				y >= expandedZone.y &&
-				y <= expandedZone.y + expandedZone.height
-			) {
-			assigned = true;
-			// Assign component to corresponding pump
-			switch (key) {
-					case 'pump1':
-						setPump1(component);
-						break;
-					case 'pump2':
-						setPump2(component);
-						break;
-					case 'pump3':
-						setPump3(component);
-						break;
-					case 'pump4':
-						setPump4(component);
-						break;
+			// Определяем, верхний это насос или нижний (по Y координате)
+			const isTopRow = zone.y < 200;
+			
+			// Для верхних насосов: больше расширение вверх и вниз
+			// Для нижних насосов: меньше расширение вверх, больше вниз
+			const paddingTop = isTopRow ? 60 : 5;
+			const paddingSide = 20;
+			const paddingBottom = isTopRow ? 40 : 10;
+			
+			const isInZone = 
+				x >= zone.x - paddingSide &&
+				x <= zone.x + zone.width + paddingSide &&
+				y >= zone.y - paddingTop &&
+				y <= zone.y + zone.height + paddingBottom;
+			
+			console.log(`Checking ${key}:`, {
+				zoneX: zone.x,
+				zoneY: zone.y,
+				zoneWidth: zone.width,
+				zoneHeight: zone.height,
+				dropX: x,
+				dropY: y,
+				isTopRow,
+				expandedZone: {
+					xMin: zone.x - paddingSide,
+					xMax: zone.x + zone.width + paddingSide,
+					yMin: zone.y - paddingTop,
+					yMax: zone.y + zone.height + paddingBottom
+				},
+				inBounds: isInZone
+			});
+			
+			if (isInZone) {
+				// Точка внутри зоны - вычисляем расстояние до центра
+				const zoneCenterX = zone.x + zone.width / 2;
+				const zoneCenterY = zone.y + zone.height / 2;
+				const distance = Math.sqrt(
+					Math.pow(x - zoneCenterX, 2) + Math.pow(y - zoneCenterY, 2)
+				);
+				
+				console.log(`${key} is a candidate, distance: ${distance}`);
+				
+				// Если уже нашли верхний ряд, игнорируем нижний ряд
+				if (foundTopRow && !isTopRow) {
+					console.log(`Ignoring ${key} because top row already found`);
+					return;
+				}
+				
+				// Если это верхний ряд и мы еще не нашли верхний ряд, сбрасываем результаты
+				if (isTopRow && !foundTopRow) {
+					minDistance = Infinity;
+					foundTopRow = true;
+				}
+				
+				if (distance < minDistance) {
+					minDistance = distance;
+					closestPump = key;
+					foundDirectHit = true;
 				}
 			}
 		});
 		
-		if (assigned) {
-			console.log(`Component ${component.name} assigned`);
+		// Если точка не попала ни в одну зону, ищем ближайшую
+		if (!foundDirectHit) {
+			console.log('No direct hit, finding closest zone');
+			Object.keys(dropZones).forEach((key) => {
+				const zone = dropZones[key];
+				const zoneCenterX = zone.x + zone.width / 2;
+				const zoneCenterY = zone.y + zone.height / 2;
+				const distance = Math.sqrt(
+					Math.pow(x - zoneCenterX, 2) + Math.pow(y - zoneCenterY, 2)
+				);
+				
+				const maxDistance = Math.max(zone.width, zone.height) * 1.5;
+				if (distance <= maxDistance && distance < minDistance) {
+					minDistance = distance;
+					closestPump = key;
+				}
+			});
+		}
+		
+		// Назначаем компонент на ближайший насос
+		if (closestPump) {
+			console.log(`Assigning to ${closestPump}`);
+			switch (closestPump) {
+				case 'pump1':
+					setPump1(component);
+					break;
+				case 'pump2':
+					setPump2(component);
+					break;
+				case 'pump3':
+					setPump3(component);
+					break;
+				case 'pump4':
+					setPump4(component);
+					break;
+			}
+			console.log(`Component ${component.name} assigned to ${closestPump}`);
+		} else {
+			console.log('No pump found for drop');
 		}
 	};
 
@@ -129,11 +203,13 @@ export default function PumpSetup({ route, navigation }: any) {
 			<View
 				style={styles.pumpSlot}
 				onLayout={(event) => {
-					const { x, y, width, height } = event.nativeEvent.layout;
-					setDropZones((prev) => ({
-						...prev,
-						[pumpKey]: { x, y, width, height },
-					}));
+					// Используем measure для получения абсолютных координат на экране
+					event.target.measure((x, y, width, height, pageX, pageY) => {
+						setDropZones((prev) => ({
+							...prev,
+							[pumpKey]: { x: pageX, y: pageY, width, height },
+						}));
+					});
 				}}
 			>
 				<Text style={styles.pumpLabel}>{strings.pumpSetup.pump} {pumpNumber}</Text>
