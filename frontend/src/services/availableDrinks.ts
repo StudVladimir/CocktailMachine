@@ -26,22 +26,19 @@ export function isCocktailAvailable(receipt: Receipt, pumps: (Component | null)[
 		.filter((pump): pump is Component => pump !== null)
 		.map(pump => normalizeString(pump.name));
 
-	console.log('Доступные ингредиенты в насосах:', availableIngredients);
 
 	// Проверяем, есть ли все необходимые ингредиенты
 	const ingredients = receipt.ingredients || receipt.Ingredients || [];
-	console.log(`Проверка рецепта "${receipt.Name || receipt.name}", ингредиенты:`, ingredients);
 	
 	const allIngredientsAvailable = ingredients.every(ingredient => {
 		// Проверяем что у ингредиента есть имя (поддерживаем оба варианта)
 		const name = ingredient.name || ingredient.Name;
 		if (!name) {
-			console.warn('Ингредиент без имени:', ingredient);
+			console.warn('Ingredient without name:', ingredient);
 			return false;
 		}
 		const normalizedIngredient = normalizeString(name);
 		const isAvailable = availableIngredients.includes(normalizedIngredient);
-		console.log(`Проверка ингредиента "${name}" (normalized: "${normalizedIngredient}"): ${isAvailable ? '✓' : '✗'}`);
 		return isAvailable;
 	});
 

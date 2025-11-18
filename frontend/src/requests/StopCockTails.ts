@@ -14,10 +14,10 @@ export default async function StopCocktail() {
 		}
 
 		const data = await response.json();
-		console.log('🛑 Экстренная остановка отправлена:', data);
+		console.log('🛑 Emergency stop command sent:', data);
 		return data;
 	} catch (error) {
-		console.error('❌ Ошибка при остановке коктейля:', error);
+		console.error('❌ Error while stopping cocktail:', error);
 		throw error;
 	}
 }

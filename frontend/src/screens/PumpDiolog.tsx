@@ -4,6 +4,7 @@ import { fetchComponents } from '../requests/GetComponents';
 import { Component } from '../types/Component';
 import Card from './Card';
 import { setDrinkImg } from '../services/setDrinkImg';
+import strings from '../localize/string';
 
 export default function PumpDialog({ navigation }: any) {
 	const [components, setComponents] = useState<Component[]>([]);
@@ -37,7 +38,6 @@ export default function PumpDialog({ navigation }: any) {
 				setLoading(true);
 				const data = await fetchComponents();
 				setComponents(data);
-				console.log('Fetched components:', data);
 			} catch (err) {
 				setError(err instanceof Error ? err.message : 'Error loading components');
 				console.error('Error loading components:', err);
@@ -53,7 +53,7 @@ export default function PumpDialog({ navigation }: any) {
 		return (
 			<View style={styles.container}>
 				<ActivityIndicator size="large" color="#0000ff" />
-				<Text style={styles.subtitle}>Loading components... </Text>
+				<Text style={styles.subtitle}>{strings.pumpDialog.loadingComponents}</Text>
 			</View>
 		);
 	}
@@ -61,10 +61,10 @@ export default function PumpDialog({ navigation }: any) {
 	if (error) {
 		return (
 			<View style={styles.container}>
-				<Text style={styles.title}>❌ Error ❌</Text>
+				<Text style={styles.title}>{strings.pumpDialog.error}</Text>
 				<Text style={styles.subtitle}>{error}</Text>
 				<View style={styles.buttonContainer}>
-					<Button title="Back" onPress={() => navigation.goBack()} />
+					<Button title={strings.pumpDialog.back} onPress={() => navigation.goBack()} />
 				</View>
 			</View>
 		);
@@ -72,9 +72,9 @@ export default function PumpDialog({ navigation }: any) {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>Диалог настройки насосов</Text>
+			<Text style={styles.title}>{strings.pumpDialog.title}</Text>
 			<Text style={styles.subtitle}>
-				Выбрано: {selectedComponents.length}/{MAX_SELECTION}
+				{strings.pumpDialog.selected} {selectedComponents.length}/{MAX_SELECTION}
 			</Text>
 
 			<FlatList
@@ -107,13 +107,13 @@ export default function PumpDialog({ navigation }: any) {
 					);
 				}}
 				ListEmptyComponent={
-					<Text style={styles.emptyText}>Нет доступных компонентов</Text>
+					<Text style={styles.emptyText}>{strings.pumpDialog.noComponents}</Text>
 				}
 			/>
 
 			<View style={styles.buttonContainer}>
 				<Button
-					title="Подписать напитки"
+					title={strings.pumpDialog.assignDrinks}
 					onPress={() => {
 						navigation.navigate('PumpSetup', { 
 							selectedComponents: selectedComponents 
@@ -123,7 +123,7 @@ export default function PumpDialog({ navigation }: any) {
 				/>
 				<View style={{ height: 10 }} />
 				<Button
-					title="Назад"
+					title={strings.pumpDialog.back}
 					onPress={() => navigation.goBack()}
 					color="#666"
 				/>

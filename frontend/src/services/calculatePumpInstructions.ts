@@ -58,17 +58,17 @@ export function calculatePumpInstructions(
 	// Получаем ингредиенты из рецепта (поддерживаем оба варианта названий полей)
 	const ingredients = cocktail.ingredients || cocktail.Ingredients || [];
 
-	console.log('=== Расчет инструкций для насосов ===');
-	console.log('Коктейль:', cocktail.name || cocktail.Name);
-	console.log('Объем:', volume, 'мл');
-	console.log('Ингредиенты:', ingredients);
+	console.log('=== Calculating pump instructions ===');
+	console.log('Cocktail:', cocktail.name || cocktail.Name);
+	console.log('Volume:', volume, 'ml');
+	console.log('Ingredients:', ingredients);
 
 	for (const ingredient of ingredients) {
 		const ingredientName = ingredient.name || ingredient.Name;
 		const ratioStr = ingredient.ratio || ingredient.Ratio;
 		
 		if (!ingredientName || !ratioStr) {
-			console.warn('Ингредиент без названия или соотношения:', ingredient);
+			console.warn('Ingredient without name or ratio:', ingredient);
 			continue;
 		}
 		
@@ -79,7 +79,7 @@ export function calculatePumpInstructions(
 
 		if (pumpNumber === null) {
 			console.warn(
-				`Насос для ингредиента "${ingredientName}" не найден. Пропускаем.`
+				`Pump for ingredient "${ingredientName}" not found. Skipping.`
 			);
 			continue;
 		}
@@ -91,11 +91,11 @@ export function calculatePumpInstructions(
 		// Время = Объем / Скорость
 		const seconds = ingredientVolume / PUMP_RATE_ML_PER_SECOND;
 
-		console.log(`Ингредиент: ${ingredientName}`);
-		console.log(`  - Насос: ${pumpNumber}`);
-		console.log(`  - Соотношение: ${ratio}%`);
-		console.log(`  - Объем: ${ingredientVolume.toFixed(2)} мл`);
-		console.log(`  - Время работы: ${seconds.toFixed(2)} сек`);
+		console.log(`Ingredient: ${ingredientName}`);
+		console.log(`  - Pump: ${pumpNumber}`);
+		console.log(`  - Ratio: ${ratio}%`);
+		console.log(`  - Volume: ${ingredientVolume.toFixed(2)} ml`);
+		console.log(`  - Run time: ${seconds.toFixed(2)} sec`);
 
 		instructions.push({
 			pump: pumpNumber,
@@ -103,7 +103,7 @@ export function calculatePumpInstructions(
 		});
 	}
 
-	console.log('Итоговые инструкции:', instructions);
+	console.log('Final instructions:', instructions);
 	console.log('=====================================');
 
 	return instructions;

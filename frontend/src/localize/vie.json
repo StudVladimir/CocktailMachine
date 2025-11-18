@@ -1,0 +1,51 @@
+{
+  "placeHolder": {
+    "notYetImplemented": "Chưa được triển khai",
+    "pleaseWait": "Vui lòng đợi, điều này có thể mất một chút thời gian..."
+  },
+  "label": {
+    "currentLocaleLabel": "Tiếng Việt",
+    "flag": "🇻🇳",
+    "cancel": "Hủy",
+    "save": "Lưu",
+    "back": "Quay lại"
+  },
+  "languagePicker": {
+    "selectLanguage": "Chọn ngôn ngữ"
+  },
+  "main": {
+    "pump": "Bơm",
+    "notAssigned": "Chưa gán",
+    "setupDrinks": "Thiết lập đồ uống",
+    "loadingCocktails": "Đang tải cocktail...",
+    "tryAgain": "Thử lại",
+    "availableCocktails": "Cocktail có sẵn",
+    "noCocktailsTitle": "😔 Không có cocktail nào",
+    "noCocktailsText": "Thiết lập bơm với nguyên liệu để xem cocktail có sẵn",
+    "volume": "Thể tích:",
+    "make": "Pha chế",
+    "selectCocktail": "Chọn cocktail",
+    "stop": "DỪNG",
+    "preparingCocktail": "Đang pha chế cocktail",
+    "sec": "giây"
+  },
+  "pumpDialog": {
+    "title": "Hộp thoại thiết lập bơm",
+    "selected": "Đã chọn:",
+    "loadingComponents": "Đang tải thành phần...",
+    "error": "❌ Lỗi ❌",
+    "back": "Quay lại",
+    "noComponents": "Không có thành phần nào",
+    "assignDrinks": "Gán đồ uống",
+    "cancel": "Hủy"
+  },
+  "pumpSetup": {
+    "title": "Thiết lập bơm",
+    "subtitle": "Kéo đồ uống vào vị trí bơm",
+    "pump": "Bơm",
+    "dragHere": "Kéo vào đây",
+    "availableDrinks": "Đồ uống có sẵn:",
+    "allAssigned": "Tất cả đồ uống đã được gán! ✓",
+    "done": "Hoàn tất"
+  }
+}

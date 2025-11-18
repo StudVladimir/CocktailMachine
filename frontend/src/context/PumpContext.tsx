@@ -23,12 +23,6 @@ export const PumpProvider = ({ children }: { children: ReactNode }) => {
 
 	const getAllPumps = useCallback(() => {
 		const pumps = [pump1, pump2, pump3, pump4];
-		console.log('getAllPumps вызван, текущие значения:', {
-			pump1: pump1?.name,
-			pump2: pump2?.name,
-			pump3: pump3?.name,
-			pump4: pump4?.name,
-		});
 		return pumps;
 	}, [pump1, pump2, pump3, pump4]);
 

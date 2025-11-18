@@ -1,0 +1,51 @@
+{
+  "placeHolder": {
+    "notYetImplemented": "Not yet implemented",
+    "pleaseWait": "Please wait, this may take a moment..."
+  },
+  "label": {
+    "currentLocaleLabel": "English",
+    "flag": "🇬🇧",
+    "cancel": "Cancel",
+    "save": "Save",
+    "back": "Back"
+  },
+  "languagePicker": {
+    "selectLanguage": "Select Language"
+  },
+  "main": {
+    "pump": "Pump",
+    "notAssigned": "Not assigned",
+    "setupDrinks": "Setup Drinks",
+    "loadingCocktails": "Loading cocktails...",
+    "tryAgain": "Try Again",
+    "availableCocktails": "Available Cocktails",
+    "noCocktailsTitle": "😔 No available cocktails",
+    "noCocktailsText": "Setup pumps with ingredients to see available cocktails",
+    "volume": "Volume:",
+    "make": "Make",
+    "selectCocktail": "Select cocktail",
+    "stop": "STOP",
+    "preparingCocktail": "Preparing cocktail",
+    "sec": "sec"
+  },
+  "pumpDialog": {
+    "title": "Pump Setup Dialog",
+    "selected": "Selected:",
+    "loadingComponents": "Loading components...",
+    "error": "❌ Error ❌",
+    "back": "Back",
+    "noComponents": "No components available",
+    "assignDrinks": "Assign Drinks",
+    "cancel": "Cancel"
+  },
+  "pumpSetup": {
+    "title": "Pump Setup",
+    "subtitle": "Drag drinks into pump slots",
+    "pump": "Pump",
+    "dragHere": "Drag here",
+    "availableDrinks": "Available drinks:",
+    "allAssigned": "All drinks assigned! ✓",
+    "done": "Done"
+  }
+}

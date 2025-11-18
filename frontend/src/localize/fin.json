@@ -4,8 +4,48 @@
     "pleaseWait": "Odota, tässä voi mennä hetki..."
   },
   "label": {
+    "currentLocaleLabel": "Suomi",
+    "flag": "🇫🇮",
     "cancel": "Peruuta",
     "save": "Tallenna",
     "back": "Takaisin"
+  },
+  "languagePicker": {
+    "selectLanguage": "Valitse kieli"
+  },
+  "main": {
+    "pump": "Pumppu",
+    "notAssigned": "Ei määritetty",
+    "setupDrinks": "Aseta juomat",
+    "loadingCocktails": "Ladataan cocktaileja...",
+    "tryAgain": "Yritä uudelleen",
+    "availableCocktails": "Saatavilla olevat cocktailit",
+    "noCocktailsTitle": "😔 Ei saatavilla olevia cocktaileja",
+    "noCocktailsText": "Aseta pumput ainesosilla nähdäksesi saatavilla olevat cocktailit",
+    "volume": "Tilavuus:",
+    "make": "Tee",
+    "selectCocktail": "Valitse cocktail",
+    "stop": "PYSÄYTÄ",
+    "preparingCocktail": "Valmistetaan cocktailia",
+    "sec": "sek"
+  },
+  "pumpDialog": {
+    "title": "Pumpun asetusikkuna",
+    "selected": "Valittu:",
+    "loadingComponents": "Ladataan komponentteja...",
+    "error": "❌ Virhe ❌",
+    "back": "Takaisin",
+    "noComponents": "Ei saatavilla olevia komponentteja",
+    "assignDrinks": "Määritä juomat",
+    "cancel": "Peruuta"
+  },
+  "pumpSetup": {
+    "title": "Pumpun asetus",
+    "subtitle": "Vedä juomat pumpun paikkoihin",
+    "pump": "Pumppu",
+    "dragHere": "Vedä tänne",
+    "availableDrinks": "Saatavilla olevat juomat:",
+    "allAssigned": "Kaikki juomat määritetty! ✓",
+    "done": "Valmis"
   }
 }

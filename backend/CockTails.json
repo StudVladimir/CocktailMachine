@@ -8,6 +8,13 @@
     "Alchohol": true
   },
   {
+    "Name": "Cola",
+    "Ingredients": [
+      { "Name": "Cola", "Ratio": "100" }
+    ],
+    "Alchohol": false
+  },
+  {
     "Name": "Cuba Libre",
     "Ingredients": [
       { "Name": "Rum", "Ratio": "40" },

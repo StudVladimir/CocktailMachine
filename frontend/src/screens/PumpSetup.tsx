@@ -12,6 +12,7 @@ import {
 import { Component } from '../types/Component';
 import { setDrinkImg } from '../services/setDrinkImg';
 import { usePumps } from '../context/PumpContext';
+import strings from '../localize/string';
 
 const { width } = Dimensions.get('window');
 const CARD_SIZE = (width - 60) / 4; // 4 карточки с отступами
@@ -99,9 +100,9 @@ export default function PumpSetup({ route, navigation }: any) {
 				y >= expandedZone.y &&
 				y <= expandedZone.y + expandedZone.height
 			) {
-				assigned = true;
-				// Назначаем компонент соответствующему насосу
-				switch (key) {
+			assigned = true;
+			// Assign component to corresponding pump
+			switch (key) {
 					case 'pump1':
 						setPump1(component);
 						break;
@@ -119,7 +120,7 @@ export default function PumpSetup({ route, navigation }: any) {
 		});
 		
 		if (assigned) {
-			console.log(`Компонент ${component.name} назначен`);
+			console.log(`Component ${component.name} assigned`);
 		}
 	};
 
@@ -135,7 +136,7 @@ export default function PumpSetup({ route, navigation }: any) {
 					}));
 				}}
 			>
-				<Text style={styles.pumpLabel}>Насос {pumpNumber}</Text>
+				<Text style={styles.pumpLabel}>{strings.pumpSetup.pump} {pumpNumber}</Text>
 				{pumpValue ? (
 					<View style={styles.assignedComponent}>
 						<Image source={setDrinkImg(pumpValue.name)} style={styles.assignedImage} resizeMode="cover" />
@@ -143,7 +144,7 @@ export default function PumpSetup({ route, navigation }: any) {
 					</View>
 				) : (
 					<View style={styles.emptySlot}>
-						<Text style={styles.emptySlotText}>Перетащите сюда</Text>
+						<Text style={styles.emptySlotText}>{strings.pumpSetup.dragHere}</Text>
 					</View>
 				)}
 			</View>
@@ -154,8 +155,8 @@ export default function PumpSetup({ route, navigation }: any) {
 
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>Настройка насосов</Text>
-			<Text style={styles.subtitle}>Перетащите напитки в слоты насосов</Text>
+			<Text style={styles.title}>{strings.pumpSetup.title}</Text>
+			<Text style={styles.subtitle}>{strings.pumpSetup.subtitle}</Text>
 
 			{/* Drop зоны для насосов */}
 			<View style={styles.pumpsContainer}>
@@ -171,7 +172,7 @@ export default function PumpSetup({ route, navigation }: any) {
 			{/* Выбранные компоненты для перетаскивания */}
 			{availableComponents.length > 0 ? (
 				<>
-					<Text style={styles.sectionTitle}>Доступные напитки:</Text>
+					<Text style={styles.sectionTitle}>{strings.pumpSetup.availableDrinks}</Text>
 					<View style={styles.componentsContainer}>
 						{availableComponents.map((component: Component) => (
 							<DraggableCard
@@ -183,25 +184,25 @@ export default function PumpSetup({ route, navigation }: any) {
 					</View>
 				</>
 			) : (
-				<Text style={styles.sectionTitle}>Все напитки назначены! ✓</Text>
+				<Text style={styles.sectionTitle}>{strings.pumpSetup.allAssigned}</Text>
 			)}
 
 			{/* Кнопка "Готово" появляется когда все назначены */}
 			{allAssigned && (
 				<View style={styles.doneButtonContainer}>
 					<TouchableOpacity 
-						style={styles.doneButtonTouchable}
-						onPress={() => {
-							console.log('Сохраненные насосы перед переходом:', {
-								pump1: pump1?.name,
-								pump2: pump2?.name,
-								pump3: pump3?.name,
-								pump4: pump4?.name,
-							});
-							navigation.navigate('Main');
+					style={styles.doneButtonTouchable}
+					onPress={() => {
+						console.log('Saved pumps before navigation:', {
+							pump1: pump1?.name,
+							pump2: pump2?.name,
+							pump3: pump3?.name,
+							pump4: pump4?.name,
+						});
+						navigation.navigate('Main');
 						}}
 					>
-						<Text style={styles.doneButton}>Готово</Text>
+						<Text style={styles.doneButton}>{strings.pumpSetup.done}</Text>
 					</TouchableOpacity>
 				</View>
 			)}
