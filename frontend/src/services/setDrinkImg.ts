@@ -16,6 +16,8 @@ const imageMap: { [key: string]: any } = {
     'Vodka': require('../../images/componentsDrinks/Vodka.png'),
     'Water': require('../../images/componentsDrinks/Water.png'),
     'Whiskey': require('../../images/componentsDrinks/Whiskey.png'),
+    'Jagerbomb': require('../../images/componentsDrinks/Jagerbomb.png'),
+    'Rum Cola': require('../../images/componentsDrinks/Rum Cola.png'),
 };
 
 export function setDrinkImg(name: string) {

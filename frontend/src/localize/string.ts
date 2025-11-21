@@ -3,6 +3,7 @@ import fi from "./fin.json";
 import ru from "./ru.json";
 import vie from "./vie.json";
 import de from "./de.json";
+import sin from "./sin.json";
 import LocalizedStrings from "localized-strings";
 
 /**
@@ -65,6 +66,6 @@ export interface IStrings {
 /**
  * Initialized localized strings
  */
-const strings = new LocalizedStrings({ en: en, fi: fi, ru: ru, vie: vie, de: de });
+const strings = new LocalizedStrings({ en: en, fi: fi, ru: ru, vie: vie, de: de, sin: sin });
 
 export default strings as LocalizedStrings & IStrings;

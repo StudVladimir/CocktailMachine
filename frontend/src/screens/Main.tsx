@@ -245,7 +245,7 @@ export default function Main({ navigation }: any) {
 									]}
 								>
 									<Card
-										imageSrc={setDrinkImg(ingredients[0]?.name || ingredients[0]?.Name || 'Unknown')}
+										imageSrc={setDrinkImg(name || 'Unknown')}
 										name={name || 'Unknown'}
 										ingredients={ingredients.map(ing => ing.name || ing.Name).filter((n): n is string => !!n)}
 										isAlcoholic={alcoholic}

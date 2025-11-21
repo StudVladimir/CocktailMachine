@@ -20,6 +20,7 @@ export default function App() {
     { code: 'fi', flag: '🇫🇮', name: 'Suomi' },
     { code: 'vie', flag: '🇻🇳', name: 'Tiếng Việt' },
     { code: 'de', flag: '🇩🇪', name: 'Deutsch' },
+    {code: 'sin', flag: '🇱🇰', name: 'සිංහල' },
   ];
 
   const selectLanguage = (languageCode: string) => {

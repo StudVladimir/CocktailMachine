@@ -1,14 +1,14 @@
 const mqtt = require('mqtt');
+require('dotenv').config()
 
 // MQTT connection parameters taken from backend/arduino.cpp
-const MQTT_HOST = process.env.MQTT_HOST || '172.20.53.121';
-const MQTT_PORT = process.env.MQTT_PORT || 1883;
-const MQTT_USER = process.env.MQTT_USER || 'student';
-const MQTT_PASS = process.env.MQTT_PASS || 'student';
+const MQTT_HOST = process.env.MQTT_HOST;
+const MQTT_PORT = process.env.MQTT_PORT;
+const MQTT_USER = process.env.MQTT_USER;
+const MQTT_PASS = process.env.MQTT_PASS;
 
 // base topic as used in Arduino sketch
-const BASE_TOPIC = process.env.MQTT_BASE_TOPIC || 'Group5/ReactNative';
-
+const BASE_TOPIC = process.env.MQTT_BASE_TOPIC || 'CockTailMachine/App';
 let client;
 let connected = false;
 

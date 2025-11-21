@@ -31,6 +31,8 @@ struct PumpState {
 };
 
 PumpState pumpStates[4] = {{false, 0, 0}, {false, 0, 0}, {false, 0, 0}, {false, 0, 0}};
+bool cocktailInProgress = false;
+bool allPumpsWereActive = false;
 
 // Function to start a pump (non-blocking)
 void startPump(int pumpNumber, float seconds) {
@@ -63,8 +65,11 @@ void startPump(int pumpNumber, float seconds) {
 
 // Function to update all pumps (check if they should be stopped)
 void updatePumps() {
+    bool anyActive = false;
+    
     for (int i = 0; i < NUM_PUMPS; i++) {
         if (pumpStates[i].active) {
+            anyActive = true;
             unsigned long elapsed = millis() - pumpStates[i].startTime;
             
             if (elapsed >= pumpStates[i].duration) {
@@ -77,6 +82,22 @@ void updatePumps() {
                 Serial.println(" finished");
             }
         }
+    }
+    
+    // Check if all pumps just finished
+    if (allPumpsWereActive && !anyActive && cocktailInProgress) {
+        Serial.println("All pumps finished!");
+        
+        // Send completion message back to MQTT
+        String statusTopic = String("Group5/") + deviceId + "/status";
+        client.publish(statusTopic.c_str(), "cocktail_completed", false);
+        
+        cocktailInProgress = false;
+        allPumpsWereActive = false;
+    }
+    
+    if (anyActive) {
+        allPumpsWereActive = true;
     }
 }
 
@@ -102,6 +123,10 @@ void emergencyStop() {
         Serial.print(i + 1);
         Serial.println(" stopped");
     }
+    
+    // Reset cocktail progress flags
+    cocktailInProgress = false;
+    allPumpsWereActive = false;
     
     Serial.println("All pumps stopped!");
     
@@ -150,19 +175,9 @@ void processCocktailInstructions(const char* jsonMessage) {
         startPump(pump, seconds);
     }
 
-    Serial.println("All pumps started! Waiting for completion...");
-
-    // Wait for all pumps to finish
-    while (anyPumpActive()) {
-        updatePumps();
-        delay(10); // Small delay to prevent excessive CPU usage
-    }
-
-    Serial.println("All pumps finished!");
-    
-    // Send completion message back to MQTT
-    String statusTopic = String("Group5/") + deviceId + "/status";
-    client.publish(statusTopic.c_str(), "cocktail_completed", false);
+    cocktailInProgress = true;
+    Serial.println("All pumps started!");
+    // Note: Pumps will be automatically stopped by updatePumps() in the main loop
 }
 
 void mqttCallback(char* topic, byte* payload, unsigned int length) {
