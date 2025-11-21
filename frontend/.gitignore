@@ -41,5 +41,6 @@ yarn-error.*
 /ios
 /android
 
+.DS_Store
 package-lock.json
 ./src/config.ts
