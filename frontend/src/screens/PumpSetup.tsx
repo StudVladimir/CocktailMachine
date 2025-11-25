@@ -7,7 +7,9 @@ import {
 	PanResponder, 
 	Animated,
 	Dimensions,
-	TouchableOpacity
+	TouchableOpacity,
+	Platform,
+	ScrollView
 } from 'react-native';
 import { Component } from '../types/Component';
 import { setDrinkImg } from '../services/setDrinkImg';
@@ -16,16 +18,41 @@ import strings from '../localize/string';
 
 const { width } = Dimensions.get('window');
 const CARD_SIZE = (width - 60) / 4; // 4 карточки с отступами
+const isWeb = Platform.OS === 'web';
 
 interface DraggableCardProps {
 	component: Component;
 	onDragEnd: (component: Component, x: number, y: number) => void;
+	isSelected?: boolean;
+	onSelect?: (component: Component) => void;
 }
 
-function DraggableCard({ component, onDragEnd }: DraggableCardProps) {
+function DraggableCard({ component, onDragEnd, isSelected, onSelect }: DraggableCardProps) {
 	const pan = new Animated.ValueXY();
 	const [isDragging, setIsDragging] = useState(false);
 
+	// Для веба используем простой клик
+	if (isWeb) {
+		return (
+			<TouchableOpacity
+				onPress={() => onSelect && onSelect(component)}
+				style={[
+					styles.draggableCard,
+					isSelected && styles.selectedCard
+				]}
+			>
+				<Image source={setDrinkImg(component.name)} style={styles.cardImage} resizeMode="cover" />
+				<Text style={styles.cardName} numberOfLines={2}>{component.name}</Text>
+				{isSelected && (
+					<View style={styles.selectedBadge}>
+						<Text style={styles.selectedBadgeText}>✓</Text>
+					</View>
+				)}
+			</TouchableOpacity>
+		);
+	}
+
+	// Для мобильных используем drag and drop
 	const panResponder = PanResponder.create({
 		onStartShouldSetPanResponder: () => true,
 		onPanResponderGrant: () => {
@@ -70,6 +97,9 @@ export default function PumpSetup({ route, navigation }: any) {
 
 	// Позиции drop зон (будут установлены через onLayout)
 	const [dropZones, setDropZones] = useState<{ [key: string]: { x: number; y: number; width: number; height: number } }>({});
+	
+	// Для веб-версии: выбранный компонент для назначения
+	const [selectedComponent, setSelectedComponent] = useState<Component | null>(null);
 
 	// Получаем список доступных компонентов (те, что еще не назначены)
 	const getAvailableComponents = () => {
@@ -81,9 +111,6 @@ export default function PumpSetup({ route, navigation }: any) {
 	const allAssigned = getAvailableComponents().length === 0 && selectedComponents.length > 0;
 
 	const handleDrop = (component: Component, x: number, y: number) => {
-		console.log('Drop coordinates:', { x, y });
-		console.log('Drop zones:', dropZones);
-		
 		let closestPump = '';
 		let minDistance = Infinity;
 		let foundTopRow = false;
@@ -109,23 +136,6 @@ export default function PumpSetup({ route, navigation }: any) {
 				y >= zone.y - paddingTop &&
 				y <= zone.y + zone.height + paddingBottom;
 			
-			console.log(`Checking ${key}:`, {
-				zoneX: zone.x,
-				zoneY: zone.y,
-				zoneWidth: zone.width,
-				zoneHeight: zone.height,
-				dropX: x,
-				dropY: y,
-				isTopRow,
-				expandedZone: {
-					xMin: zone.x - paddingSide,
-					xMax: zone.x + zone.width + paddingSide,
-					yMin: zone.y - paddingTop,
-					yMax: zone.y + zone.height + paddingBottom
-				},
-				inBounds: isInZone
-			});
-			
 			if (isInZone) {
 				// Точка внутри зоны - вычисляем расстояние до центра
 				const zoneCenterX = zone.x + zone.width / 2;
@@ -134,11 +144,8 @@ export default function PumpSetup({ route, navigation }: any) {
 					Math.pow(x - zoneCenterX, 2) + Math.pow(y - zoneCenterY, 2)
 				);
 				
-				console.log(`${key} is a candidate, distance: ${distance}`);
-				
 				// Если уже нашли верхний ряд, игнорируем нижний ряд
 				if (foundTopRow && !isTopRow) {
-					console.log(`Ignoring ${key} because top row already found`);
 					return;
 				}
 				
@@ -158,7 +165,6 @@ export default function PumpSetup({ route, navigation }: any) {
 		
 		// Если точка не попала ни в одну зону, ищем ближайшую
 		if (!foundDirectHit) {
-			console.log('No direct hit, finding closest zone');
 			Object.keys(dropZones).forEach((key) => {
 				const zone = dropZones[key];
 				const zoneCenterX = zone.x + zone.width / 2;
@@ -177,7 +183,6 @@ export default function PumpSetup({ route, navigation }: any) {
 		
 		// Назначаем компонент на ближайший насос
 		if (closestPump) {
-			console.log(`Assigning to ${closestPump}`);
 			switch (closestPump) {
 				case 'pump1':
 					setPump1(component);
@@ -192,16 +197,36 @@ export default function PumpSetup({ route, navigation }: any) {
 					setPump4(component);
 					break;
 			}
-			console.log(`Component ${component.name} assigned to ${closestPump}`);
-		} else {
-			console.log('No pump found for drop');
 		}
 	};
 
+	// Обработчик клика на насос (для веб-версии)
+	const handlePumpClick = (pumpKey: string) => {
+		if (!isWeb || !selectedComponent) return;
+		
+		switch (pumpKey) {
+			case 'pump1':
+				setPump1(selectedComponent);
+				break;
+			case 'pump2':
+				setPump2(selectedComponent);
+				break;
+			case 'pump3':
+				setPump3(selectedComponent);
+				break;
+			case 'pump4':
+				setPump4(selectedComponent);
+				break;
+		}
+		
+		// Сбрасываем выбор после назначения
+		setSelectedComponent(null);
+	};
+
 	const renderPumpSlot = (pumpNumber: number, pumpValue: Component | null, pumpKey: string) => {
-		return (
+		const slotContent = (
 			<View
-				style={styles.pumpSlot}
+				style={[styles.pumpSlot, !isWeb && styles.pumpSlotMobile]}
 				onLayout={(event) => {
 					// Используем measure для получения абсолютных координат на экране
 					event.target.measure((x, y, width, height, pageX, pageY) => {
@@ -225,10 +250,100 @@ export default function PumpSetup({ route, navigation }: any) {
 				)}
 			</View>
 		);
+
+		// Для веба оборачиваем в TouchableOpacity
+		if (isWeb) {
+			return (
+				<TouchableOpacity 
+					key={pumpKey}
+					onPress={() => handlePumpClick(pumpKey)}
+					style={[
+						styles.pumpSlotWrapper,
+						selectedComponent && styles.pumpSlotClickable
+					]}
+				>
+					{slotContent}
+				</TouchableOpacity>
+			);
+		}
+		
+		// Для мобильных возвращаем в обёртке для сетки 2x2
+		return (
+			<View key={pumpKey} style={styles.pumpSlotWrapperMobile}>
+				{slotContent}
+			</View>
+		);
 	};
 
 	const availableComponents = getAvailableComponents();
 
+	// Веб-версия: горизонтальный layout
+	if (isWeb) {
+		return (
+			<View style={styles.containerWeb}>
+				{/* Левая панель: Pump Slots */}
+				<View style={styles.leftPanelWeb}>
+					<Text style={styles.panelTitleWeb}>{strings.pumpSetup.title}</Text>
+					<Text style={styles.panelSubtitleWeb}>{strings.pumpSetup.subtitle}</Text>
+					
+					{/* Drop зоны для насосов */}
+					<View style={styles.pumpsContainerWeb}>
+						{renderPumpSlot(1, pump1, 'pump1')}
+						{renderPumpSlot(2, pump2, 'pump2')}
+						{renderPumpSlot(3, pump3, 'pump3')}
+						{renderPumpSlot(4, pump4, 'pump4')}
+					</View>
+
+					{/* Кнопка "Готово" появляется когда все назначены */}
+					{allAssigned && (
+						<TouchableOpacity 
+							style={styles.doneButtonWeb}
+							onPress={() => {
+								navigation.navigate('Main');
+							}}
+						>
+							<Text style={styles.doneButtonText}>{strings.pumpSetup.done}</Text>
+						</TouchableOpacity>
+					)}
+				</View>
+
+				{/* Правая панель: Available Drinks */}
+				<View style={styles.rightPanelWeb}>
+					{availableComponents.length > 0 ? (
+						<>
+							<Text style={styles.panelTitleWeb}>{strings.pumpSetup.availableDrinks}</Text>
+							<Text style={styles.webInstructionsMain}>
+								Click on a drink to select it, then click on a pump slot to assign
+							</Text>
+							{selectedComponent && (
+								<View style={styles.selectedInfoContainer}>
+									<Text style={styles.selectedInfoText}>
+										Selected: <Text style={styles.selectedInfoName}>{selectedComponent.name}</Text>
+									</Text>
+									<Text style={styles.selectedInfoSubtext}>Click on a pump to assign</Text>
+								</View>
+							)}
+							<ScrollView contentContainerStyle={styles.componentsContainerWeb}>
+								{availableComponents.map((component: Component) => (
+									<DraggableCard
+										key={component._id}
+										component={component}
+										onDragEnd={handleDrop}
+										isSelected={selectedComponent?._id === component._id}
+										onSelect={setSelectedComponent}
+									/>
+								))}
+							</ScrollView>
+						</>
+					) : (
+						<Text style={styles.panelTitleWeb}>{strings.pumpSetup.allAssigned}</Text>
+					)}
+				</View>
+			</View>
+		);
+	}
+
+	// Мобильная версия (без изменений)
 	return (
 		<View style={styles.container}>
 			<Text style={styles.title}>{strings.pumpSetup.title}</Text>
@@ -255,6 +370,8 @@ export default function PumpSetup({ route, navigation }: any) {
 								key={component._id}
 								component={component}
 								onDragEnd={handleDrop}
+								isSelected={selectedComponent?._id === component._id}
+								onSelect={setSelectedComponent}
 							/>
 						))}
 					</View>
@@ -269,14 +386,8 @@ export default function PumpSetup({ route, navigation }: any) {
 					<TouchableOpacity 
 					style={styles.doneButtonTouchable}
 					onPress={() => {
-						console.log('Saved pumps before navigation:', {
-							pump1: pump1?.name,
-							pump2: pump2?.name,
-							pump3: pump3?.name,
-							pump4: pump4?.name,
-						});
 						navigation.navigate('Main');
-						}}
+					}}
 					>
 						<Text style={styles.doneButton}>{strings.pumpSetup.done}</Text>
 					</TouchableOpacity>
@@ -287,11 +398,85 @@ export default function PumpSetup({ route, navigation }: any) {
 }
 
 const styles = StyleSheet.create({
+	// Мобильные стили
 	container: {
 		flex: 1,
 		padding: 20,
 		backgroundColor: '#f0f8ff',
 	},
+	// Веб стили
+	containerWeb: {
+		flexDirection: 'row',
+		padding: 15,
+		backgroundColor: '#f0f8ff',
+		height: '100%',
+	},
+	leftPanelWeb: {
+		width: 400,
+		backgroundColor: '#fff',
+		borderRadius: 12,
+		padding: 15,
+		marginRight: 15,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
+	},
+	rightPanelWeb: {
+		flex: 1,
+		backgroundColor: '#fff',
+		borderRadius: 12,
+		padding: 15,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
+	},
+	panelTitleWeb: {
+		fontSize: 18,
+		fontWeight: 'bold',
+		color: '#333',
+		marginBottom: 10,
+		textAlign: 'center',
+	},
+	panelSubtitleWeb: {
+		fontSize: 14,
+		color: '#666',
+		marginBottom: 15,
+		textAlign: 'center',
+	},
+	pumpsContainerWeb: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'space-between',
+		marginBottom: 15,
+	},
+	webInstructionsMain: {
+		fontSize: 13,
+		color: '#2196F3',
+		textAlign: 'center',
+		marginBottom: 10,
+		fontStyle: 'italic',
+	},
+	componentsContainerWeb: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'flex-start',
+	},
+	doneButtonWeb: {
+		backgroundColor: '#4CAF50',
+		paddingVertical: 12,
+		borderRadius: 8,
+		alignItems: 'center',
+	},
+	doneButtonText: {
+		color: '#fff',
+		fontSize: 16,
+		fontWeight: 'bold',
+	},
+	// Мобильные стили (оригинальные)
 	title: {
 		fontSize: 24,
 		fontWeight: 'bold',
@@ -305,22 +490,63 @@ const styles = StyleSheet.create({
 		color: '#666',
 		textAlign: 'center',
 	},
+	selectedInfoContainer: {
+		backgroundColor: '#E3F2FD',
+		padding: 12,
+		borderRadius: 8,
+		marginBottom: 15,
+		borderLeftWidth: 4,
+		borderLeftColor: '#2196F3',
+	},
+	selectedInfoText: {
+		fontSize: 16,
+		color: '#333',
+		marginBottom: 4,
+	},
+	selectedInfoName: {
+		fontWeight: 'bold',
+		color: '#2196F3',
+	},
+	selectedInfoSubtext: {
+		fontSize: 14,
+		color: '#666',
+		fontStyle: 'italic',
+	},
 	pumpsContainer: {
 		flexDirection: 'row',
 		flexWrap: 'wrap',
 		justifyContent: 'space-between',
 		marginBottom: 20,
 	},
-	pumpSlot: {
+	pumpSlotWrapperMobile: {
 		width: '48%',
-		height: 140,
 		marginBottom: 15,
+	},
+	pumpSlotWrapper: {
+		width: '48%',
+		marginBottom: 15,
+		...(isWeb && {
+			cursor: 'pointer',
+			transition: 'all 0.2s ease',
+		}),
+	},
+	pumpSlotClickable: {
+		opacity: 0.9,
+		...(isWeb && {
+			cursor: 'pointer',
+		}),
+	},
+	pumpSlot: {
+		width: '100%',
 		backgroundColor: '#fff',
 		borderRadius: 12,
 		padding: 10,
 		borderWidth: 2,
 		borderColor: '#ddd',
 		borderStyle: 'dashed',
+	},
+	pumpSlotMobile: {
+		minHeight: 150,
 	},
 	pumpLabel: {
 		fontSize: 14,
@@ -347,16 +573,16 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		backgroundColor: '#E8F5E9',
 		borderRadius: 8,
-		padding: 5,
+		padding: 8,
 	},
 	assignedImage: {
-		width: 60,
-		height: 60,
+		width: 70,
+		height: 70,
 		borderRadius: 8,
-		marginBottom: 5,
+		marginBottom: 8,
 	},
 	assignedName: {
-		fontSize: 11,
+		fontSize: 12,
 		fontWeight: '600',
 		color: '#333',
 		textAlign: 'center',
@@ -391,6 +617,35 @@ const styles = StyleSheet.create({
 		elevation: 5,
 		borderWidth: 2,
 		borderColor: '#4CAF50',
+		position: 'relative',
+		...(isWeb && {
+			cursor: 'pointer',
+			transition: 'all 0.2s ease',
+		}),
+	},
+	selectedCard: {
+		borderColor: '#2196F3',
+		borderWidth: 3,
+		backgroundColor: '#E3F2FD',
+		...(isWeb && {
+			boxShadow: '0 4px 12px rgba(33, 150, 243, 0.4)',
+		}),
+	},
+	selectedBadge: {
+		position: 'absolute',
+		top: 5,
+		right: 5,
+		backgroundColor: '#2196F3',
+		borderRadius: 12,
+		width: 24,
+		height: 24,
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	selectedBadgeText: {
+		color: '#fff',
+		fontSize: 16,
+		fontWeight: 'bold',
 	},
 	cardImage: {
 		width: CARD_SIZE - 20,

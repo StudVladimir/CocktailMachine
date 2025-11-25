@@ -1,6 +1,9 @@
 import { API_URL } from '../config';
 
 export default async function StopCocktail() {
+	console.log('🛑 === EMERGENCY STOP REQUEST ===');
+	console.log('📡 Sending MQTT emergency stop to backend:', `${API_URL}/makecocktail/stop`);
+	
 	try {
 		const response = await fetch(`${API_URL}/makecocktail/stop`, {
 			method: 'POST',
@@ -14,10 +17,11 @@ export default async function StopCocktail() {
 		}
 
 		const data = await response.json();
-		console.log('🛑 Emergency stop command sent:', data);
+		console.log('✅ Emergency stop confirmed by backend:', data);
+		console.log('⚠️ All pumps should stop immediately!');
 		return data;
 	} catch (error) {
-		console.error('❌ Error while stopping cocktail:', error);
+		console.error('❌ Error while sending emergency stop:', error);
 		throw error;
 	}
 }

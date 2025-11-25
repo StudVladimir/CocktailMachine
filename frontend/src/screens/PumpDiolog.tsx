@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, Button, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { fetchComponents } from '../requests/GetComponents';
 import { Component } from '../types/Component';
 import Card from './Card';
 import { setDrinkImg } from '../services/setDrinkImg';
 import strings from '../localize/string';
+
+const isWeb = Platform.OS === 'web';
 
 export default function PumpDialog({ navigation }: any) {
 	const [components, setComponents] = useState<Component[]>([]);
@@ -51,7 +53,7 @@ export default function PumpDialog({ navigation }: any) {
 
 	if (loading) {
 		return (
-			<View style={styles.container}>
+			<View style={[styles.container, isWeb && styles.containerWeb]}>
 				<ActivityIndicator size="large" color="#0000ff" />
 				<Text style={styles.subtitle}>{strings.pumpDialog.loadingComponents}</Text>
 			</View>
@@ -60,7 +62,7 @@ export default function PumpDialog({ navigation }: any) {
 
 	if (error) {
 		return (
-			<View style={styles.container}>
+			<View style={[styles.container, isWeb && styles.containerWeb]}>
 				<Text style={styles.title}>{strings.pumpDialog.error}</Text>
 				<Text style={styles.subtitle}>{error}</Text>
 				<View style={styles.buttonContainer}>
@@ -70,18 +72,84 @@ export default function PumpDialog({ navigation }: any) {
 		);
 	}
 
+	// Веб-версия
+	if (isWeb) {
+		return (
+			<View style={styles.containerWeb}>
+				<Text style={styles.titleWeb}>{strings.pumpDialog.title}</Text>
+				<Text style={styles.subtitleWeb}>
+					{strings.pumpDialog.selected} {selectedComponents.length}/{MAX_SELECTION}
+				</Text>
+
+				<ScrollView contentContainerStyle={styles.listContainerWeb}>
+					{components.map((item) => {
+						const selected = isComponentSelected(item._id);
+						return (
+							<TouchableOpacity 
+								key={item._id}
+								onPress={() => handleComponentPress(item)}
+								activeOpacity={0.7}
+								style={styles.cardTouchableWeb}
+							>
+								<View style={[
+									styles.cardWrapperWeb,
+									selected && styles.cardSelected
+								]}>
+									<Card
+										imageSrc={setDrinkImg(item.name)}
+										name={item.name}
+									/>
+									{selected && (
+										<View style={styles.selectionBadge}>
+											<Text style={styles.selectionBadgeText}>✓</Text>
+										</View>
+									)}
+								</View>
+							</TouchableOpacity>
+						);
+					})}
+					{components.length === 0 && (
+						<Text style={styles.emptyText}>{strings.pumpDialog.noComponents}</Text>
+					)}
+				</ScrollView>
+
+				<View style={styles.buttonContainerWeb}>
+					<Button
+						title={strings.pumpDialog.assignDrinks}
+						onPress={() => {
+							navigation.navigate('PumpSetup', { 
+								selectedComponents: selectedComponents 
+							});
+						}}
+						disabled={selectedComponents.length === 0}
+					/>
+					<View style={{ height: 10 }} />
+					<Button
+						title={strings.pumpDialog.back}
+						onPress={() => navigation.goBack()}
+						color="#666"
+					/>
+				</View>
+			</View>
+		);
+	}
+
+	// Мобильная версия
 	return (
 		<View style={styles.container}>
-			<Text style={styles.title}>{strings.pumpDialog.title}</Text>
-			<Text style={styles.subtitle}>
-				{strings.pumpDialog.selected} {selectedComponents.length}/{MAX_SELECTION}
-			</Text>
+			<View style={[styles.header, isWeb && styles.headerWeb]}>
+				<Text style={[styles.title, isWeb && styles.titleWeb]}>{strings.pumpDialog.title}</Text>
+				<Text style={[styles.subtitle, isWeb && styles.subtitleWeb]}>
+					{strings.pumpDialog.selected} {selectedComponents.length}/{MAX_SELECTION}
+				</Text>
+			</View>
 
 			<FlatList
 				data={components}
 				keyExtractor={(item) => item._id}
-				numColumns={2}
-				contentContainerStyle={styles.listContainer}
+				key={isWeb ? 'web-grid' : 'mobile-grid'}
+				numColumns={isWeb ? 5 : 2}
+				contentContainerStyle={[styles.listContainer, isWeb && styles.listContainerWeb]}
 				renderItem={({ item }) => {
 					const selected = isComponentSelected(item._id);
 					return (
@@ -91,6 +159,7 @@ export default function PumpDialog({ navigation }: any) {
 						>
 							<View style={[
 								styles.cardWrapper,
+								isWeb && styles.cardWrapperWeb,
 								selected && styles.cardSelected
 							]}>
 								<Card
@@ -137,6 +206,52 @@ const styles = StyleSheet.create({
 		flex: 1,
 		padding: 20,
 		backgroundColor: '#f0f8ff',
+	},
+	containerWeb: {
+		flex: 1,
+		padding: 20,
+		backgroundColor: '#f0f8ff',
+		alignItems: 'center',
+	},
+	titleWeb: {
+		fontSize: 22,
+		fontWeight: 'bold',
+		color: '#333',
+		marginBottom: 10,
+		textAlign: 'center',
+	},
+	subtitleWeb: {
+		fontSize: 16,
+		color: '#0066cc',
+		fontWeight: '600',
+		marginBottom: 20,
+		textAlign: 'center',
+	},
+	listContainerWeb: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'center',
+		maxWidth: 1200,
+	},
+	cardTouchableWeb: {
+		width: 150,
+		margin: 8,
+	},
+	cardWrapperWeb: {
+		position: 'relative',
+		borderRadius: 14,
+		borderWidth: 3,
+		borderColor: 'transparent',
+	},
+	buttonContainerWeb: {
+		marginTop: 20,
+		width: 300,
+	},
+	header: {
+		marginBottom: 20,
+	},
+	headerWeb: {
+		marginBottom: 10,
 	},
 	title: {
 		fontSize: 24,

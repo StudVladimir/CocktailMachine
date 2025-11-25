@@ -14,6 +14,11 @@ export default function App() {
   const [currentLanguage, setCurrentLanguage] = React.useState('en');
   const [languagePickerVisible, setLanguagePickerVisible] = React.useState(false);
 
+  // Устанавливаем английский язык при загрузке приложения
+  React.useEffect(() => {
+    strings.setLanguage('en');
+  }, []);
+
   const languages = [
     { code: 'en', flag: '🇬🇧', name: 'English' },
     { code: 'ru', flag: '🇷🇺', name: 'Русский' },

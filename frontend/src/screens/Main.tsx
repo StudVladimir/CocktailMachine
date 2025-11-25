@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, Button, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, Button, StyleSheet, FlatList, ActivityIndicator, TouchableOpacity, Platform, ScrollView } from 'react-native';
 import { usePumps } from '../context/PumpContext';
 import { fetchReceipts } from '../requests/GetReceipts';
 import { getAvailableCocktails } from '../services/availableDrinks';
@@ -10,6 +10,8 @@ import { Receipt } from '../types/Receipt';
 import Card from './Card';
 import { setDrinkImg } from '../services/setDrinkImg';
 import strings from '../localize/string';
+
+const isWeb = Platform.OS === 'web';
 
 export default function Main({ navigation }: any) {
 	const { pump1, pump2, pump3, pump4 } = usePumps();
@@ -157,6 +159,180 @@ export default function Main({ navigation }: any) {
 
 	const volumes = [80, 200, 300];
 
+	// Если веб - используем горизонтальный layout
+	if (isWeb) {
+		return (
+			<View style={styles.containerWeb}>
+				{/* Левая панель: Насосы */}
+				<View style={styles.leftPanel}>
+					<Text style={styles.panelTitle}>{strings.main.setupDrinks}</Text>
+					<View style={styles.pumpsGridWeb}>
+						<View style={styles.pumpInfoCardWeb}>
+							<Text style={styles.pumpInfoLabelWeb}>{strings.main.pump} 1</Text>
+							<Text style={styles.pumpInfoValueWeb} numberOfLines={2}>
+								{pump1?.name || strings.main.notAssigned}
+							</Text>
+						</View>
+						<View style={styles.pumpInfoCardWeb}>
+							<Text style={styles.pumpInfoLabelWeb}>{strings.main.pump} 2</Text>
+							<Text style={styles.pumpInfoValueWeb} numberOfLines={2}>
+								{pump2?.name || strings.main.notAssigned}
+							</Text>
+						</View>
+						<View style={styles.pumpInfoCardWeb}>
+							<Text style={styles.pumpInfoLabelWeb}>{strings.main.pump} 3</Text>
+							<Text style={styles.pumpInfoValueWeb} numberOfLines={2}>
+								{pump3?.name || strings.main.notAssigned}
+							</Text>
+						</View>
+						<View style={styles.pumpInfoCardWeb}>
+							<Text style={styles.pumpInfoLabelWeb}>{strings.main.pump} 4</Text>
+							<Text style={styles.pumpInfoValueWeb} numberOfLines={2}>
+								{pump4?.name || strings.main.notAssigned}
+							</Text>
+						</View>
+					</View>
+					<TouchableOpacity 
+						style={styles.setupButtonWeb}
+						onPress={() => navigation.navigate('PumpDialog')}
+					>
+						<Text style={styles.setupButtonText}>{strings.main.setupDrinks}</Text>
+					</TouchableOpacity>
+				</View>
+
+				{/* Центральная панель: Коктейли */}
+				<View style={styles.centerPanel}>
+					{loading ? (
+						<View style={styles.loadingContainer}>
+							<ActivityIndicator size="large" color="#0066cc" />
+							<Text style={styles.loadingText}>{strings.main.loadingCocktails}</Text>
+						</View>
+					) : error ? (
+						<View style={styles.errorContainer}>
+							<Text style={styles.errorText}>❌ {error}</Text>
+							<Button title={strings.main.tryAgain} onPress={loadAvailableCocktails} />
+						</View>
+					) : isMakingCocktail ? (
+						<View style={styles.progressContainer}>
+							<Text style={styles.progressTitle}>{strings.main.preparingCocktail}</Text>
+							<Text style={styles.progressCocktailName}>{cocktailName}</Text>
+							<View style={styles.progressBarContainer}>
+								<View style={[styles.progressBar, { width: `${progress}%` }]} />
+							</View>
+							<Text style={styles.progressText}>{Math.round(progress)}%</Text>
+							<Text style={styles.progressTime}>
+								{Math.round((totalTime * progress) / 100)} / {Math.round(totalTime)} {strings.main.sec}
+							</Text>
+						</View>
+					) : availableCocktails.length > 0 ? (
+						<>
+							<Text style={styles.panelTitle}>
+								{strings.main.availableCocktails} ({availableCocktails.length})
+							</Text>
+							<ScrollView contentContainerStyle={styles.cocktailsGridWeb}>
+								{availableCocktails.map((item, index) => {
+									const name = item.name || item.Name;
+									const ingredients = item.ingredients || item.Ingredients || [];
+									const alcoholic = item.alcoholic ?? item.Alchohol;
+									const isSelected = selectedCocktail && 
+										(selectedCocktail.name || selectedCocktail.Name) === (item.name || item.Name);
+									
+									return (
+										<TouchableOpacity
+											key={`${name}-${index}`}
+											onPress={() => handleSelectCocktail(item)}
+											style={[
+												styles.cardWrapperWeb,
+												isSelected && styles.cardWrapperSelected,
+											]}
+										>
+											<Card
+												imageSrc={setDrinkImg(name || 'Unknown')}
+												name={name || 'Unknown'}
+												ingredients={ingredients.map(ing => ing.name || ing.Name).filter((n): n is string => !!n)}
+												isAlcoholic={alcoholic}
+											/>
+											{isSelected && (
+												<View style={styles.selectedBadge}>
+													<Text style={styles.selectedBadgeText}>✓</Text>
+												</View>
+											)}
+										</TouchableOpacity>
+									);
+								})}
+							</ScrollView>
+						</>
+					) : (
+						<View style={styles.emptyContainer}>
+							<Text style={styles.emptyTitle}>{strings.main.noCocktailsTitle}</Text>
+							<Text style={styles.emptyText}>
+								{strings.main.noCocktailsText}
+							</Text>
+						</View>
+					)}
+				</View>
+
+				{/* Правая панель: Управление */}
+				<View style={styles.rightPanel}>
+					<Text style={styles.panelTitle}>{strings.main.volume}</Text>
+					{volumes.map((volume) => (
+						<TouchableOpacity
+							key={volume}
+							style={[
+								styles.volumeButtonWeb,
+								selectedVolume === volume && styles.volumeButtonSelected,
+							]}
+							onPress={() => setSelectedVolume(volume)}
+							disabled={isMakingCocktail}
+						>
+							<Text
+								style={[
+									styles.volumeText,
+									selectedVolume === volume && styles.volumeTextSelected,
+								]}
+							>
+								{volume} ml
+							</Text>
+							{selectedVolume === volume && (
+								<Text style={styles.checkmark}>✓</Text>
+							)}
+						</TouchableOpacity>
+					))}
+
+					{!isMakingCocktail ? (
+						<TouchableOpacity
+							style={[
+								styles.makeCocktailButtonWeb,
+								!selectedCocktail && styles.makeCocktailButtonDisabled,
+							]}
+							onPress={handleMakeCocktail}
+							disabled={!selectedCocktail}
+						>
+							<Text style={[
+								styles.makeCocktailText,
+								!selectedCocktail && styles.makeCocktailTextDisabled,
+							]}>
+								{selectedCocktail 
+									? `${strings.main.make}\n${selectedCocktail.name || selectedCocktail.Name}` 
+									: strings.main.selectCocktail}
+							</Text>
+						</TouchableOpacity>
+					) : (
+						<TouchableOpacity
+							style={styles.stopButton}
+							onPress={handleStopCocktail}
+						>
+							<Text style={styles.stopButtonText}>
+								{strings.main.stop}
+							</Text>
+						</TouchableOpacity>
+					)}
+				</View>
+			</View>
+		);
+	}
+
+	// Мобильная версия (без изменений)
 	return (
 		<View style={styles.container}>
 			{/* Секция отображения текущих насосов */}
@@ -219,16 +395,17 @@ export default function Main({ navigation }: any) {
 					{Math.round((totalTime * progress) / 100)} / {Math.round(totalTime)} {strings.main.sec}
 				</Text>
 			</View>
-		) : availableCocktails.length > 0 ? (
-				<>
-					<Text style={styles.sectionTitle}>
-						{strings.main.availableCocktails} ({availableCocktails.length})
-					</Text>
-					<FlatList
-						data={availableCocktails}
-						keyExtractor={(item, index) => `${item.name || item.Name}-${index}`}
-						numColumns={2}
-						contentContainerStyle={styles.cocktailsList}
+			) : availableCocktails.length > 0 ? (
+					<>
+						<Text style={styles.sectionTitle}>
+							{strings.main.availableCocktails} ({availableCocktails.length})
+						</Text>
+						<FlatList
+							data={availableCocktails}
+							keyExtractor={(item, index) => `${item.name || item.Name}-${index}`}
+							key={isWeb ? 'web-grid' : 'mobile-grid'}
+							numColumns={isWeb ? 3 : 2}
+							contentContainerStyle={[styles.cocktailsList, isWeb && styles.cocktailsListWeb]}
 						renderItem={({ item }) => {
 							const name = item.name || item.Name;
 							const ingredients = item.ingredients || item.Ingredients || [];
@@ -260,14 +437,14 @@ export default function Main({ navigation }: any) {
 						}}
 					/>
 				</>
-			) : (
-				<View style={styles.emptyContainer}>
-					<Text style={styles.emptyTitle}>{strings.main.noCocktailsTitle}</Text>
-					<Text style={styles.emptyText}>
-						{strings.main.noCocktailsText}
-					</Text>
-				</View>
-			)}
+				) : (
+					<View style={styles.emptyContainer}>
+						<Text style={styles.emptyTitle}>{strings.main.noCocktailsTitle}</Text>
+						<Text style={styles.emptyText}>
+							{strings.main.noCocktailsText}
+						</Text>
+					</View>
+				)}
 
 			{/* Секция выбора объема и кнопка приготовления */}
 			<View style={styles.controlsSection}>
@@ -336,11 +513,133 @@ export default function Main({ navigation }: any) {
 }
 
 const styles = StyleSheet.create({
+	// Мобильные стили
 	container: {
 		flex: 1,
 		padding: 20,
 		backgroundColor: '#f5f5f5',
 	},
+	// Веб стили - основной контейнер
+	containerWeb: {
+		flexDirection: 'row',
+		padding: 15,
+		backgroundColor: '#f5f5f5',
+		height: '100%',
+	},
+	// Веб стили - левая панель (насосы)
+	leftPanel: {
+		width: 220,
+		backgroundColor: '#fff',
+		borderRadius: 12,
+		padding: 15,
+		marginRight: 15,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
+	},
+	// Веб стили - центральная панель (коктейли)
+	centerPanel: {
+		flex: 1,
+		backgroundColor: '#fff',
+		borderRadius: 12,
+		padding: 15,
+		marginRight: 15,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
+	},
+	// Веб стили - правая панель (управление)
+	rightPanel: {
+		width: 200,
+		backgroundColor: '#fff',
+		borderRadius: 12,
+		padding: 15,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
+	},
+	// Общий заголовок панели
+	panelTitle: {
+		fontSize: 16,
+		fontWeight: 'bold',
+		color: '#333',
+		marginBottom: 15,
+		textAlign: 'center',
+	},
+	// Веб стили - сетка насосов
+	pumpsGridWeb: {
+		marginBottom: 15,
+	},
+	pumpInfoCardWeb: {
+		backgroundColor: '#f8f9fa',
+		borderRadius: 8,
+		padding: 10,
+		marginBottom: 8,
+		borderWidth: 1,
+		borderColor: '#e0e0e0',
+	},
+	pumpInfoLabelWeb: {
+		fontSize: 11,
+		fontWeight: '600',
+		color: '#666',
+		marginBottom: 4,
+	},
+	pumpInfoValueWeb: {
+		fontSize: 12,
+		fontWeight: 'bold',
+		color: '#333',
+	},
+	setupButtonWeb: {
+		backgroundColor: '#0066cc',
+		paddingVertical: 12,
+		borderRadius: 8,
+		alignItems: 'center',
+	},
+	// Веб стили - сетка коктейлей
+	cocktailsGridWeb: {
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		justifyContent: 'flex-start',
+	},
+	cardWrapperWeb: {
+		width: '31%',
+		margin: '1%',
+		position: 'relative',
+		borderWidth: 3,
+		borderColor: 'transparent',
+		borderRadius: 12,
+		overflow: 'hidden',
+	},
+	// Веб стили - кнопки объема
+	volumeButtonWeb: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		paddingVertical: 10,
+		paddingHorizontal: 15,
+		marginBottom: 8,
+		backgroundColor: '#fff',
+		borderWidth: 2,
+		borderColor: '#ddd',
+		borderRadius: 8,
+	},
+	makeCocktailButtonWeb: {
+		backgroundColor: '#0066cc',
+		paddingVertical: 20,
+		paddingHorizontal: 15,
+		borderRadius: 12,
+		alignItems: 'center',
+		justifyContent: 'center',
+		marginTop: 20,
+		minHeight: 100,
+	},
+	// Мобильные стили насосов
 	pumpsInfoSection: {
 		backgroundColor: '#fff',
 		borderRadius: 12,
@@ -418,6 +717,9 @@ const styles = StyleSheet.create({
 	},
 	cocktailsList: {
 		paddingBottom: 20,
+	},
+	cocktailsListWeb: {
+		paddingBottom: 10,
 	},
 	cardWrapper: {
 		position: 'relative',
@@ -545,6 +847,20 @@ const styles = StyleSheet.create({
 		alignItems: 'stretch',
 		justifyContent: 'space-between',
 		gap: 15,
+	},
+	controlsSectionWeb: {
+		flex: 0,
+		width: 280,
+		flexDirection: 'column',
+		borderTopWidth: 0,
+		borderRadius: 12,
+		padding: 15,
+		gap: 10,
+		shadowColor: '#000',
+		shadowOffset: { width: 0, height: 2 },
+		shadowOpacity: 0.1,
+		shadowRadius: 4,
+		elevation: 3,
 	},
 	volumeColumn: {
 		flex: 1,
