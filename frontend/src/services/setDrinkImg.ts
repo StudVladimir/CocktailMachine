@@ -27,6 +27,11 @@ const imageMap: { [key: string]: any } = {
     'Pineapple juice': require('../../images/componentsDrinks/Pineapple juice.png'),
     'Peach juice': require('../../images/componentsDrinks/Peach juice.png'),
     'Lemonade': require('../../images/componentsDrinks/Lemonade.png'),
+    'Beer': require('../../images/componentsDrinks/Beer.png'),
+    'Lemon Schweppes': require('../../images/componentsDrinks/Lemon Schweppes.png'),
+    'Anastasia': require('../../images/componentsDrinks/Anastasia.png'),
+    'Beer Mimosa': require('../../images/componentsDrinks/Beer Mimosa.png'),
+    'Beer Peak': require('../../images/componentsDrinks/Beer Peak.png')
 };
 
 export function setDrinkImg(name: string) {

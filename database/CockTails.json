@@ -6,11 +6,11 @@
   "Ingredients": [
     {
       "Name": "Jägermeister",
-      "Ratio": "30"
+      "Ratio": "15"
     },
     {
       "Name": "Energy drink",
-      "Ratio": "70"
+      "Ratio": "85"
     }
   ],
   "Alchohol": true
@@ -304,4 +304,59 @@
     }
   ],
   "Alcohol": false
+},
+{
+  "_id": {
+    "$oid": "6925b200a4429535fbe8fd1c"
+  },
+  "Name": "Beer Mimosa",
+  "Ingredients": [
+    {
+      "Name": "Beer",
+      "Ratio": "50"
+    },
+    {
+      "Name": "Orange juice",
+      "Ratio": "50"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "6925b210a4429535fbe8fd1e"
+  },
+  "Name": "Anastaisa",
+  "Ingredients": [
+    {
+      "Name": "Lemon Schweppes",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Soda water",
+      "Ratio": "20"
+    },
+    {
+      "Name": "Orange juice",
+      "Ratio": "40"
+    }
+  ],
+  "Alchohol": false
+},
+{
+  "_id": {
+    "$oid": "6925b220a4429535fbe8fd20"
+  },
+  "Name": "Beer Peak",
+  "Ingredients": [
+    {
+      "Name": "Beer",
+      "Ratio": "83"
+    },
+    {
+      "Name": "Lemon Schweppes",
+      "Ratio": "17"
+    }
+  ],
+  "Alchohol": true
 }]
