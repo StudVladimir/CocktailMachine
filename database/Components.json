@@ -14,5 +14,9 @@
     { "name": "Gin" },
     { "name": "Tonic water" },
     { "name": "Lemon juice" },
-    { "name": "Water" }
+    { "name": "Water" },
+    { "name": "Berry juice" },
+    { "name": "Mint syrup" },
+    { "name": "Pineapple juice" },
+    { "name": "Peach juice" }
 ]

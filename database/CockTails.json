@@ -1,95 +1,307 @@
-[
-  {
-    "Name": "Jägerbomb",
-    "Ingredients": [
-      { "Name": "Jägermeister", "Ratio": "30" },
-      { "Name": "Energy drink", "Ratio": "70" }
-    ],
-    "Alchohol": true
+[{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abcd"
   },
-  {
-    "Name": "Cola",
-    "Ingredients": [
-      { "Name": "Cola", "Ratio": "100" }
-    ],
-    "Alchohol": false
+  "Name": "Jagerbomb",
+  "Ingredients": [
+    {
+      "Name": "Jägermeister",
+      "Ratio": "30"
+    },
+    {
+      "Name": "Energy drink",
+      "Ratio": "70"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abce"
   },
-  {
-    "Name": "Cuba Libre",
-    "Ingredients": [
-      { "Name": "Rum", "Ratio": "40" },
-      { "Name": "Cola", "Ratio": "55" },
-      { "Name": "Lime juice", "Ratio": "5" }
-    ],
-    "Alchohol": true
+  "Name": "Cola",
+  "Ingredients": [
+    {
+      "Name": "Cola",
+      "Ratio": "100"
+    }
+  ],
+  "Alchohol": false
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abcf"
   },
-  {
-    "Name": "Screwdriver",
-    "Ingredients": [
-      { "Name": "Vodka", "Ratio": "50" },
-      { "Name": "Orange juice", "Ratio": "50" }
-    ],
-    "Alchohol": true
+  "Name": "Cuba Libre",
+  "Ingredients": [
+    {
+      "Name": "Rum",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Cola",
+      "Ratio": "55"
+    },
+    {
+      "Name": "Lime juice",
+      "Ratio": "5"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abd0"
   },
-  {
-    "Name": "Mojito",
-    "Ingredients": [
-      { "Name": "Rum", "Ratio": "40" },
-      { "Name": "Soda water", "Ratio": "40" },
-      { "Name": "Lime juice", "Ratio": "15" },
-      { "Name": "Sugar syrup", "Ratio": "5" }
-    ],
-    "Alchohol": true
+  "Name": "Screwdriver",
+  "Ingredients": [
+    {
+      "Name": "Vodka",
+      "Ratio": "50"
+    },
+    {
+      "Name": "Orange juice",
+      "Ratio": "50"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abd1"
   },
-  {
-    "Name": "Virgin Mojito",
-    "Ingredients": [
-      { "Name": "Soda water", "Ratio": "50" },
-      { "Name": "Lime juice", "Ratio": "40" },
-      { "Name": "Sugar syrup", "Ratio": "10" }
-    ],
-    "Alchohol": false
+  "Name": "Mojito",
+  "Ingredients": [
+    {
+      "Name": "Rum",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Soda water",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Lime juice",
+      "Ratio": "15"
+    },
+    {
+      "Name": "Sugar syrup",
+      "Ratio": "5"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abd2"
   },
-  {
-    "Name": "Whiskey Cola",
-    "Ingredients": [
-      { "Name": "Whiskey", "Ratio": "40" },
-      { "Name": "Cola", "Ratio": "60" }
-    ],
-    "Alchohol": true
+  "Name": "Virgin Mojito",
+  "Ingredients": [
+    {
+      "Name": "Soda water",
+      "Ratio": "50"
+    },
+    {
+      "Name": "Lime juice",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Sugar syrup",
+      "Ratio": "10"
+    }
+  ],
+  "Alchohol": false
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abd3"
   },
-  {
-    "Name": "Tequila Sunrise",
-    "Ingredients": [
-      { "Name": "Tequila", "Ratio": "35" },
-      { "Name": "Orange juice", "Ratio": "60" },
-      { "Name": "Grenadine syrup", "Ratio": "5" }
-    ],
-    "Alchohol": true
+  "Name": "Whiskey Cola",
+  "Ingredients": [
+    {
+      "Name": "Whiskey",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Cola",
+      "Ratio": "60"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abd4"
   },
-  {
-    "Name": "Gin Tonic",
-    "Ingredients": [
-      { "Name": "Gin", "Ratio": "40" },
-      { "Name": "Tonic water", "Ratio": "60" }
-    ],
-    "Alchohol": true
+  "Name": "Tequila Sunrise",
+  "Ingredients": [
+    {
+      "Name": "Tequila",
+      "Ratio": "35"
+    },
+    {
+      "Name": "Orange juice",
+      "Ratio": "60"
+    },
+    {
+      "Name": "Grenadine syrup",
+      "Ratio": "5"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abd5"
   },
-  {
-    "Name": "Lemonade",
-    "Ingredients": [
-      { "Name": "Lemon juice", "Ratio": "25" },
-      { "Name": "Sugar syrup", "Ratio": "10" },
-      { "Name": "Water", "Ratio": "65" }
-    ],
-    "Alchohol": false
+  "Name": "Gin Tonic",
+  "Ingredients": [
+    {
+      "Name": "Gin",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Tonic water",
+      "Ratio": "60"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abd6"
   },
-  {
-    "Name": "Rum Cola",
-    "Ingredients": [
-      { "Name": "Rum", "Ratio": "40" },
-      { "Name": "Cola", "Ratio": "60" }
-    ],
-    "Alchohol": true
-  }
-]
+  "Name": "Lemonade",
+  "Ingredients": [
+    {
+      "Name": "Lemon juice",
+      "Ratio": "25"
+    },
+    {
+      "Name": "Sugar syrup",
+      "Ratio": "10"
+    },
+    {
+      "Name": "Water",
+      "Ratio": "65"
+    }
+  ],
+  "Alchohol": false
+},
+{
+  "_id": {
+    "$oid": "691b243cbe823bb424f8abd7"
+  },
+  "Name": "Rum Cola",
+  "Ingredients": [
+    {
+      "Name": "Rum",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Cola",
+      "Ratio": "60"
+    }
+  ],
+  "Alchohol": true
+},
+{
+  "_id": {
+    "$oid": "6925b156a4429535fbe8fd14"
+  },
+  "Name": "Peach Summer",
+  "Ingredients": [
+    {
+      "Name": "Peach juice",
+      "Ratio": "50"
+    },
+    {
+      "Name": "Lemon juice",
+      "Ratio": "10"
+    },
+    {
+      "Name": "Sugar syrup",
+      "Ratio": "10"
+    },
+    {
+      "Name": "Soda water",
+      "Ratio": "30"
+    }
+  ],
+  "Alcohol": false
+},
+{
+  "_id": {
+    "$oid": "6925b179a4429535fbe8fd16"
+  },
+  "Name": "Green Cooler",
+  "Ingredients": [
+    {
+      "Name": "Lime juice",
+      "Ratio": "25"
+    },
+    {
+      "Name": "Mint syrup",
+      "Ratio": "10"
+    },
+    {
+      "Name": "Sugar syrup",
+      "Ratio": "10"
+    },
+    {
+      "Name": "Water",
+      "Ratio": "55"
+    }
+  ],
+  "Alcohol": false
+},
+{
+  "_id": {
+    "$oid": "6925b189a4429535fbe8fd18"
+  },
+  "Name": "Tropical Breeze",
+  "Ingredients": [
+    {
+      "Name": "Pineapple juice",
+      "Ratio": "50"
+    },
+    {
+      "Name": "Orange juice",
+      "Ratio": "30"
+    },
+    {
+      "Name": "Sugar syrup",
+      "Ratio": "10"
+    },
+    {
+      "Name": "Soda water",
+      "Ratio": "10"
+    }
+  ],
+  "Alcohol": false
+},
+{
+  "_id": {
+    "$oid": "6925b190a4429535fbe8fd1a"
+  },
+  "Name": "Berry Splash",
+  "Ingredients": [
+    {
+      "Name": "Berry juice",
+      "Ratio": "40"
+    },
+    {
+      "Name": "Lemon juice",
+      "Ratio": "10"
+    },
+    {
+      "Name": "Sugar syrup",
+      "Ratio": "10"
+    },
+    {
+      "Name": "Water",
+      "Ratio": "40"
+    }
+  ],
+  "Alcohol": false
+}]
