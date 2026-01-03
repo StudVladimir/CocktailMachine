@@ -2,9 +2,10 @@
 
 An automated cocktail making system built with React Native, Node.js backend, MQTT messaging, and Arduino-controlled pumps. The system allows users to browse available cocktails, assign ingredients to pumps, and automatically prepare drinks with precise measurements.
 
-![IMG_8756](https://github.com/user-attachments/assets/7a1e9940-ce83-4cc4-9c8b-70549b7cdb7b)
-
-![IMG_8779](https://github.com/user-attachments/assets/f66722ff-fbd6-459a-a9f7-7ac5cb17e849)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/7a1e9940-ce83-4cc4-9c8b-70549b7cdb7b" width="45%">
+  <img src="https://github.com/user-attachments/assets/f66722ff-fbd6-459a-a9f7-7ac5cb17e849" width="45%">
+</p>
 
 ## Table of Contents
 
@@ -263,8 +264,10 @@ Payload: "emergency_stop_executed"
 
 ### Hardware Components
 
-<img width="256" height="256" alt="image" src="https://github.com/user-attachments/assets/8e59c253-6d56-46eb-8f65-a7c80bbf2de9" />
-<img width="240" height="240" alt="image" src="https://github.com/user-attachments/assets/0c7eecf6-8b0f-4520-ae9f-e34d99f52429" />
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/8e59c253-6d56-46eb-8f65-a7c80bbf2de9" width="45%">
+  <img src="https://github.com/user-attachments/assets/0c7eecf6-8b0f-4520-ae9f-e34d99f52429" width="45%">
+</p>
 
 
 **Components List:**
